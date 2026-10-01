@@ -98,9 +98,14 @@
   .topbar nav{display:flex;gap:26px;font-size:14.5px;color:var(--ink-soft);}
   .topbar nav a{text-decoration:none;}
   .topbar nav a:hover{color:var(--ink);}
-  .topbar .btn{display:none;}
-  @media (min-width:720px){ .topbar .btn{display:inline-flex;} .topbar nav .mobile-only{display:none;} }
+  .topbar .btn{
+    display:inline-flex;
+    transition:background .15s ease, border-color .15s ease, opacity .2s ease, transform .2s ease, visibility .2s ease;
+  }
+  .topbar .btn.is-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-6px);}
+  @media (min-width:720px){ .topbar nav .mobile-only{display:none;} }
   @media (max-width:719px){ .topbar nav{display:none;} }
+  @media (max-width:719px){ .topbar .btn{padding:9px 13px;font-size:12px;} }
 
   .btn{
     font-family:var(--sans);font-weight:700;font-size:14.5px;
@@ -336,8 +341,6 @@
   .proc-step .num{font-family:var(--serif);font-size:22px;color:var(--stone);}
   .proc-step h3{font-size:15.5px;margin-bottom:4px;font-family:var(--sans);font-weight:700;}
   .proc-step p{margin:0;color:var(--ink-soft);font-size:14px;}
-  .apply-cta{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;}
-  .apply-cta .hint{font-size:13.5px;color:var(--ink-soft);}
   .deadline{font-size:13.5px;color:var(--ink-soft);margin-top:14px;}
 
   /* ---------- footer ---------- */
@@ -456,7 +459,7 @@
   @media (max-width:900px){ .promise{grid-template-columns:1fr;gap:24px;padding:28px 22px;} .promise-grid{grid-template-columns:1fr;gap:18px;} }
   .loc-layout .rest-line{font-size:21px;color:var(--paper-on-forest);margin-top:24px;}
   .not-fit{align-self:start;}
-  .intake-note,.step-note,.team-note,.deadline,.apply-cta .hint{font-size:15px;line-height:1.6;}
+  .intake-note,.step-note,.team-note,.deadline{font-size:15px;line-height:1.6;}
   /* ===== равные строки в карточках: subgrid ===== */
   .pain-grid{grid-template-columns:repeat(4,1fr);}
   .pain-card{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:0;}
@@ -558,7 +561,19 @@
     var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.18,rootMargin:'0px 0px -6% 0px'});
     els.forEach(function(e){io.observe(e)});
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+  function setupCtaVisibility(){
+    var topbarCta=document.querySelector('.topbar .btn');
+    var heroCta=document.querySelector('.hero-cta-row');
+    if(!topbarCta || !heroCta)return;
+    topbarCta.classList.add('is-hidden');
+    if(!('IntersectionObserver' in window)){topbarCta.classList.remove('is-hidden');return;}
+    var ctaObserver=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){topbarCta.classList.toggle('is-hidden',entry.isIntersecting);});
+    },{threshold:0,rootMargin:'-64px 0px 0px 0px'});
+    ctaObserver.observe(heroCta);
+  }
+  function init(){go();setupCtaVisibility();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </head>
@@ -573,7 +588,7 @@
       <a href="#team">Команда</a>
       <a href="#apply">Как попасть</a>
     </nav>
-    <a class="btn" href="https://t.me/innerlila" target="_blank" rel="noopener">Обсудить мой контент</a>
+    <a class="btn is-hidden" href="https://t.me/ai_camp_kp_bot" target="_blank" rel="noopener">Заполнить заявку в боте →</a>
   </div>
 </div>
 
@@ -597,7 +612,7 @@
     </div>
 
     <div class="hero-cta-row">
-      <a class="btn" href="https://t.me/innerlila" target="_blank" rel="noopener">Обсудить мой контент →</a>
+      <a class="btn" href="https://t.me/ai_camp_kp_bot" target="_blank" rel="noopener">Заполнить заявку в боте →</a>
       <span class="hint">Сначала мини-интервью: проверим, что вам это действительно нужно</span>
     </div>
   </div>
@@ -959,10 +974,6 @@
           <div><h3>Кемп · 10 октября</h3><p>Приезжаете со своим бизнесом и уезжаете с командой агентов, которая уже готовит ваш контент.</p></div>
         </div>
 
-        <div class="apply-cta">
-          <a class="btn" href="https://t.me/innerlila" target="_blank" rel="noopener">Обсудить мой контент →</a>
-          <span class="hint">Ответим сегодня · 30 дней поддержки после кемпа</span>
-        </div>
         <p class="deadline">В группе 12 мест, после мини-интервью держим ваше 48 часов. Чем раньше поговорим, тем спокойнее подготовимся к вашему бизнесу.</p>
       </div>
     </div>
@@ -976,7 +987,6 @@
         <div class="brand"><span class="mark">▲</span>AI CAMP</div>
         <p>AI-коворк в горах: за один день собираем команду AI-агентов для контента. Красная Поляна, вид на горы · 10 октября 2026.</p>
       </div>
-      <a class="btn btn-ghost" href="https://t.me/innerlila" target="_blank" rel="noopener">Обсудить мой контент</a>
     </div>
     <div class="fine">
       <span>Группа до 12 человек · первая встреча серии: смыслы и контент</span>
